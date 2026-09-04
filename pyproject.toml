@@ -1,0 +1,110 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+name = "bank-ai-automation-testing"
+version = "1.0.0"
+description = "Enterprise Banking AI Multi-Agent Autonomous Testing Framework with HITL"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+authors = [
+    {name = "BankAIAutomationTesting Team"}
+]
+
+dependencies = [
+    # --- Orchestration & AI ---
+    "langgraph>=0.2.0",
+    "langchain>=0.3.0",
+    "langchain-anthropic>=0.3.0",
+    "langsmith>=0.2.0",
+
+    # --- MCP Protocol ---
+    "mcp[cli]>=2.0.0",
+
+    # --- Browser Automation ---
+    "playwright>=1.48.0",
+
+    # --- PII Protection ---
+    "presidio-analyzer>=2.2.0",
+    "presidio-anonymizer>=2.2.0",
+    "spacy>=3.7.0",
+
+    # --- Synthetic Data ---
+    "schwifty>=2024.0.0",
+
+    # --- ISO 20022 ---
+    "lxml>=5.0.0",
+
+    # --- API Testing ---
+    "httpx>=0.27.0",
+    "zeep>=4.2.0",
+
+    # --- Database ---
+    "sqlalchemy>=2.0.0",
+
+    # --- Configuration ---
+    "pyyaml>=6.0",
+    "pydantic>=2.5.0",
+    "pydantic-settings>=2.1.0",
+
+    # --- Observability ---
+    "opentelemetry-api>=1.27.0",
+    "opentelemetry-sdk>=1.27.0",
+    "opentelemetry-exporter-otlp>=1.27.0",
+
+    # --- Evidence & Reporting ---
+    "jinja2>=3.1.0",
+
+    # --- Utilities ---
+    "python-dotenv>=1.0.0",
+    "aiofiles>=23.0.0",
+    "structlog>=24.0.0",
+    "rich>=13.0.0",
+    "click>=8.1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-cov>=5.0.0",
+    "pytest-mock>=3.12.0",
+    "ruff>=0.4.0",
+    "mypy>=1.8.0",
+    "pre-commit>=3.6.0",
+]
+
+dashboard = [
+    "fastapi>=0.115.0",
+    "uvicorn>=0.30.0",
+    "websockets>=12.0",
+]
+
+[project.scripts]
+bank-test = "src.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+markers = [
+    "unit: Unit tests",
+    "integration: Integration tests",
+    "slow: Slow-running tests",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true

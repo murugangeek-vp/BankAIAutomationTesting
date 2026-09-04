@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BankAI — Multi-Agent Banking Automation & Audit Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0d14;
+            --bg-secondary: #121824;
+            --bg-card: rgba(22, 30, 46, 0.7);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --accent-cyan: #00f2fe;
+            --accent-blue: #4facfe;
+            --accent-green: #10b981;
+            --accent-purple: #8b5cf6;
+            --accent-amber: #f59e0b;
+            --accent-red: #ef4444;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(79, 172, 254, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(139, 92, 246, 0.08) 0%, transparent 40%);
+        }
+
+        header {
+            background: rgba(18, 24, 36, 0.8);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 700;
+            font-size: 1.25rem;
+            letter-spacing: -0.02em;
+        }
+
+        .logo-badge {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            color: #000;
+            padding: 0.25rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 800;
+
+        }
+
+        .status-pill {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: var(--accent-green);
+            padding: 0.35rem 0.85rem;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-green);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent-green);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+
+        main {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            box-shadow: var(--glass-shadow);
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .stat-value {
+            font-size: 1.85rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+        }
+
+        .stat-sub {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            box-shadow: var(--glass-shadow);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.85rem;
+        }
+
+        .panel-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .badge-count {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--accent-amber);
+            border: 1px solid rgba(245, 158, 11, 0.4);
+            padding: 0.15rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+        }
+
+        /* Review Item Card */
+        .review-card {
+            background: rgba(18, 24, 36, 0.6);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-amber);
+            border-radius: 8px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .diff-box {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            background: #06080c;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 0.75rem;
+            border-radius: 6px;
+            color: #a7f3d0;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+
+        .actions-row {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-approve {
+            background: linear-gradient(135deg, #059669, #10b981);
+            color: #fff;
+        }
+
+        .btn-approve:hover {
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-reject {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: var(--accent-red);
+        }
+
+        .btn-reject:hover {
+            background: rgba(239, 68, 68, 0.25);
+        }
+
+        /* Ledger table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        th {
+            text-align: left;
+            padding: 0.75rem;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 500;
+        }
+
+        td {
+            padding: 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .tag-pass {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent-green);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <span>BankAI</span>
+            <span class="logo-badge">ENTERPRISE 2026</span>
+        </div>
+        <div class="status-pill">
+            <div class="status-dot"></div>
+            <span>LangGraph Multi-Agent Orchestrator Active</span>
+        </div>
+    </header>
+
+    <main>
+        <!-- Top Stats Row -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-label">Total Test Executions</span>
+                <span class="stat-value" id="stat-runs">128</span>
+                <span class="stat-sub">Across 5 persona profiles</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Suite Pass Rate</span>
+                <span class="stat-value" style="color: var(--accent-green)">97.6%</span>
+                <span class="stat-sub">Deterministic Pass/Fail verdict</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Locators Self-Healed</span>
+                <span class="stat-value" style="color: var(--accent-cyan)">14</span>
+                <span class="stat-sub">Ratified via human gate</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">SWIFT 2026 Address Conformance</span>
+                <span class="stat-value" style="color: var(--accent-purple)">100%</span>
+                <span class="stat-sub">Nov 2026 ISO 20022 mandate</span>
+            </div>
+        </div>
+
+        <!-- Main Dashboard Split -->
+        <div class="dashboard-grid">
+            <!-- Left Side: HITL Ratification Queue & Test Execution -->
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <span>HITL Healer Ratification Queue</span>
+                            <span class="badge-count" id="ratification-count">1 Pending</span>
+                        </div>
+                    </div>
+                    
+                    <div id="review-list">
+                        <div class="review-card">
+                            <div class="review-header">
+                                <span>Item: HEAL-STEP-03 (Cross-Border Wire Transfer Button)</span>
+                                <span style="color: var(--accent-amber)">Confidence: 88%</span>
+                            </div>
+                            <div style="font-size: 0.85rem; color: var(--text-secondary)">
+                                Failure Classification: <strong>LOCATOR_DRIFT</strong> — Element text updated in DOM from 'Submit Wire' to 'Confirm & Send Wire Transfer'.
+                            </div>
+                            <div class="diff-box">--- a/tests/payment_flow.spec.ts
++++ b/tests/payment_flow.spec.ts
+- page.getByRole('button', name='Submit Wire Transfer')
++ page.getByRole('button', name='Confirm & Send Wire Transfer')</div>
+                            <div class="actions-row">
+                                <button class="btn btn-reject" onclick="handleAction('reject')">Reject Proposal</button>
+                                <button class="btn btn-approve" onclick="handleAction('approve')">Ratify & Merge Diff</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <span>Trigger Interactive Multi-Agent Test Run</span>
+                        </div>
+                    </div>
+                    <form onsubmit="event.preventDefault(); startRun();" style="display: flex; flex-direction: column; gap: 1rem;">
+                        <input type="text" id="req-input" value="Validate cross-border pacs.008 SWIFT payment with structured address and ledger double-entry check" style="background: rgba(0,0,0,0.4); border: 1px solid var(--border-color); color: #fff; padding: 0.75rem; border-radius: 6px; font-size: 0.9rem;">
+                        <div style="display: flex; gap: 1rem;">
+                            <select id="persona-select" style="background: rgba(0,0,0,0.4); border: 1px solid var(--border-color); color: #fff; padding: 0.5rem; border-radius: 6px; flex: 1;">
+                                <option value="corporate_treasurer">Persona: Corporate Treasurer</option>
+                                <option value="retail_fast">Persona: Retail Fast Mobile User</option>
+                                <option value="fraud_actor">Persona: Fraud Velocity Prober</option>
+                                <option value="accessibility_user">Persona: Accessibility Screen Reader User</option>
+                            </select>
+                            <button type="submit" class="btn btn-approve">Run Multi-Agent Test</button>
+                        </div>
+                    </form>
+                    <div id="run-output" style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; background: #06080c; padding: 1rem; border-radius: 6px; display: none;"></div>
+                </div>
+            </div>
+
+            <!-- Right Side: Immutable Audit Ledger Feed -->
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <span>Immutable Cryptographic Audit Ledger</span>
+                    </div>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Agent</th>
+                                <th>Action</th>
+                                <th>SHA-256 Digest</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ledger-rows">
+                            <tr>
+                                <td>0</td>
+                                <td>SYSTEM</td>
+                                <td><span class="tag-pass">GENESIS</span></td>
+                                <td>e3b0c44298fc1c14...</td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>PlannerAgent</td>
+                                <td><span class="tag-pass">PLAN</span></td>
+                                <td>4a89f310bc9219a1...</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>SyntheticData</td>
+                                <td><span class="tag-pass">GENERATE</span></td>
+                                <td>99bf12a781204c5e...</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>ExecutorAgent</td>
+                                <td><span class="tag-pass">TOOL_CALL</span></td>
+                                <td>712a8bc912f00a42...</td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>CriticAgent</td>
+                                <td><span class="tag-pass">VERDICT</span></td>
+                                <td>b489a12c401928f9...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function handleAction(type) {
+            const queue = document.getElementById('review-list');
+            const count = document.getElementById('ratification-count');
+            if (type === 'approve') {
+                queue.innerHTML = '<div style="color: var(--accent-green); padding: 1rem; text-align: center;">✅ Proposal Ratified & Merged into repository.</div>';
+            } else {
+                queue.innerHTML = '<div style="color: var(--accent-red); padding: 1rem; text-align: center;">❌ Proposal Rejected. Queued for engineer manual review.</div>';
+            }
+            count.innerText = '0 Pending';
+        }
+
+        function startRun() {
+            const out = document.getElementById('run-output');
+            out.style.display = 'block';
+            out.innerText = '[08:20:01] LangGraph Orchestrator initialized run ID: RUN-CROSS_BORDER_PAYMENT-2026\n' +
+                            '[08:20:02] PlannerAgent: Decomposed requirement into 6 multi-surface steps.\n' +
+                            '[08:20:03] SyntheticDataAgent: Generated IBAN DE89370400440532013000.\n' +
+                            '[08:20:04] ExecutorAgent: Executed web/API steps via MCP Gateway.\n' +
+                            '[08:20:05] CriticAgent: Oracle verification PASSED. Ledger balance matched.\n' +
+                            '[08:20:06] Audit Ledger block #5 committed with SHA-256 digest: c89012fa89b21852...';
+        }
+    </script>
+</body>
+</html>
