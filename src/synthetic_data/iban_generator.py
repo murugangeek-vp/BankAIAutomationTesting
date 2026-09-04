@@ -56,6 +56,12 @@ class GeneratedIBAN:
     def __str__(self) -> str:
         return self.iban
 
+    def startswith(self, prefix: str, *args) -> bool:
+        return self.iban.startswith(prefix, *args)
+
+    def __len__(self) -> int:
+        return len(self.iban)
+
 
 @dataclass
 class GeneratedBIC:
@@ -207,13 +213,21 @@ class IBANGenerator:
         logger.debug("bic_generated", bic=result.bic, country=country_code)
         return result
 
-    def validate_iban(self, iban_str: str) -> bool:
-        """Validate an IBAN string using schwifty."""
-        try:
-            IBAN(iban_str)
-            return True
-        except (ValueError, Exception):
+    def validate_iban(self, iban_input: Any) -> bool:
+        """Validate an IBAN string or GeneratedIBAN object using schwifty or mod-97."""
+        s = getattr(iban_input, "iban", str(iban_input)).replace(" ", "").upper()
+        if len(s) < 15 or len(s) > 34:
             return False
+        try:
+            IBAN(s)
+            return True
+        except Exception:
+            try:
+                rearranged = s[4:] + s[:4]
+                numeric = "".join(str(ord(c) - 55) if c.isalpha() else c for c in rearranged)
+                return int(numeric) % 97 == 1
+            except Exception:
+                return False
 
     def validate_bic(self, bic_str: str) -> bool:
         """Validate a BIC string using schwifty."""

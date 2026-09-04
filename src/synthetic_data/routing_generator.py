@@ -84,6 +84,15 @@ class RoutingNumberGenerator:
         logger.debug("routing_number_generated", rtn=result.routing_number)
         return result
 
+    def generate_routing_number(self) -> str:
+        """Alias returning 9-digit routing string."""
+        return self.generate().routing_number
+
+    @staticmethod
+    def validate_checksum(routing_number: str) -> bool:
+        """Alias for validate checksum."""
+        return RoutingNumberGenerator.validate(routing_number)
+
     def generate_batch(self, count: int, unique: bool = True) -> list[GeneratedRoutingNumber]:
         """Generate a batch of test routing numbers."""
         results: list[GeneratedRoutingNumber] = []

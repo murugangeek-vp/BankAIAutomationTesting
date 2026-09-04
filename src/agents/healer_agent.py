@@ -45,13 +45,16 @@ class HealerAgent(BaseAgent):
 
     def __init__(self, agent_id: str = "healer-01", tool_registry: Optional[MCPToolRegistry] = None):
         super().__init__(
+            role=AgentRole.HEALER,
             agent_id=agent_id,
             name="Self-Healing Diagnosis Agent",
-            role=AgentRole.HEALER,
             tool_registry=tool_registry,
             token_budget=10000
         )
         self.confidence_threshold = 0.85
+
+    def get_system_prompt(self) -> str:
+        return "You are the Healer Agent. Your role is to diagnose test failures, classify root causes, and propose locator self-healing diffs with confidence scores."
 
     def process(self, input_data: Dict[str, Any], context: Dict[str, Any]) -> AgentResponse:
         """

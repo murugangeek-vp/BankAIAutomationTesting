@@ -225,5 +225,53 @@ class OrchestratorState(BaseModel):
     last_error: Optional[str] = None
     error_count: int = 0
 
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = {"arbitrary_types_allowed": True}
+
+
+# ---------------------------------------------------------------------------
+# High-Level Orchestrator Dataclasses & Enums
+# ---------------------------------------------------------------------------
+
+class ExecutionStatus(str, Enum):
+    PASSED = "PASSED"
+    FAILED = "FAILED"
+    RUNNING = "RUNNING"
+    REQUIRES_APPROVAL = "REQUIRES_APPROVAL"
+    CANCELLED = "CANCELLED"
+
+
+@dataclass
+class StepExecutionRecord:
+    step_id: str
+    action: str
+    target: str
+    status: ExecutionStatus
+    duration_ms: float = 0.0
+    error_message: Optional[str] = None
+
+
+@dataclass
+class BankingTestState:
+    run_id: str
+    business_journey: str
+    status: ExecutionStatus = ExecutionStatus.RUNNING
+    persona_type: str = "corporate_treasurer"
+    synthetic_data: dict[str, Any] = field(default_factory=dict)
+    step_history: list[StepExecutionRecord] = field(default_factory=list)
+    healed_locators: dict[str, str] = field(default_factory=dict)
+    pending_human_review: bool = False
+    oracle_checklist_passed: bool = True
+    compliance_findings: list[str] = field(default_factory=list)
+    metrics: dict[str, Any] = field(default_factory=dict)
+    audit_logs: list[dict[str, Any]] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
+    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+
+    def add_log(self, agent: str, message: str, level: str = "INFO") -> None:
+        self.audit_logs.append({
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "agent": agent,
+            "message": message,
+            "level": level
+        })
+

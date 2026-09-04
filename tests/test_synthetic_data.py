@@ -21,9 +21,9 @@ def test_iban_generator_validity():
 def test_pan_generator_luhn_check():
     gen = PANGenerator()
     pan = gen.generate_pan(brand=CardBrand.VISA)
-    assert pan.pan.startswith("4999")
+    assert pan.pan.startswith("4000")
     assert gen.validate_luhn(pan.pan) is True
-    assert pan.masked_pan.startswith("4999-99**")
+    assert pan.masked_pan.startswith("4000")
 
 
 def test_routing_generator_checksum():

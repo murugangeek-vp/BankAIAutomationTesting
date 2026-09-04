@@ -49,17 +49,23 @@ class PlannerAgent(BaseAgent):
 
     def __init__(self, agent_id: str = "planner-01", tool_registry: Optional[MCPToolRegistry] = None):
         super().__init__(
+            role=AgentRole.PLANNER,
             agent_id=agent_id,
             name="Test Plan Architect",
-            role=AgentRole.PLANNER,
             tool_registry=tool_registry,
             token_budget=15000
         )
 
-    def process(self, input_data: Dict[str, Any], context: Dict[str, Any]) -> AgentResponse:
+    def get_system_prompt(self) -> str:
+        return "You are the Planner Agent. Your role is to analyze banking requirements and decompose them into structured multi-surface test steps."
+
+    def process(self, input_data: Any, context: Optional[Dict[str, Any]] = None) -> Any:
         """
         Processes a business journey specification and outputs a structured TestPlan.
         """
+        if not isinstance(input_data, dict):
+            return input_data
+
         user_prompt = input_data.get("requirement", "")
         journey_type = input_data.get("journey_type", "CROSS_BORDER_PAYMENT")
 

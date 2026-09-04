@@ -46,12 +46,15 @@ class CriticAgent(BaseAgent):
 
     def __init__(self, agent_id: str = "critic-01", tool_registry: Optional[MCPToolRegistry] = None):
         super().__init__(
+            role=AgentRole.CRITIC,
             agent_id=agent_id,
             name="Oracle Verification Critic",
-            role=AgentRole.CRITIC,
             tool_registry=tool_registry,
             token_budget=15000
         )
+
+    def get_system_prompt(self) -> str:
+        return "You are the Critic Agent. Your role is to evaluate test execution outputs against human-authored checklists, oracle contracts, and regulatory rules."
 
     def process(self, input_data: Dict[str, Any], context: Dict[str, Any]) -> AgentResponse:
         """

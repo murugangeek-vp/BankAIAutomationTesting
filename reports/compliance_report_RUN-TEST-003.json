@@ -1,0 +1,25 @@
+{
+  "report_metadata": {
+    "generator": "BankAI Enterprise Automation Framework v1.0",
+    "compliance_standard": "ISO 20022 / SOX-404 / PCI-DSS / SWIFT 2026",
+    "run_id": "RUN-TEST-003",
+    "journey": "CROSS_BORDER_PAYMENT",
+    "persona": "corporate_treasurer",
+    "status": "PASSED",
+    "ledger_chain_valid": true,
+    "ledger_block_count": 1,
+    "critic_oracle_passed": true
+  },
+  "execution_metrics": {},
+  "compliance_findings": [],
+  "healed_locators": {},
+  "pending_human_review": false,
+  "audit_ledger_summary": [
+    {
+      "index": 0,
+      "agent": "SYSTEM",
+      "action": "GENESIS",
+      "hash": "a1cf7c819f819c46ffb1b6d6656716e2a05212e27ea30e53558da7faaa0e89fd"
+    }
+  ]
+}

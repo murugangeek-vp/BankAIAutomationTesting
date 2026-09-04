@@ -24,13 +24,16 @@ class PersonaAgent(BaseAgent):
 
     def __init__(self, agent_id: str = "persona-01", tool_registry: Optional[MCPToolRegistry] = None):
         super().__init__(
+            role=AgentRole.PERSONA,
             agent_id=agent_id,
             name="Behavioral Archetype Persona Driver",
-            role=AgentRole.PERSONA,
             tool_registry=tool_registry,
             token_budget=10000
         )
         self.catalog = PersonaCatalog()
+
+    def get_system_prompt(self) -> str:
+        return "You are the Persona Agent. Your role is to parameterize test steps using human behavioral archetypes."
 
     def process(self, input_data: Dict[str, Any], context: Dict[str, Any]) -> AgentResponse:
         """

@@ -24,7 +24,7 @@ class HITLAPIController:
         self.review_queue = review_queue or HITLReviewQueue()
         self.orchestrator = BankingTestOrchestratorGraph()
 
-    def get_dashboard_summary() -> Dict[str, Any]:
+    def get_dashboard_summary(self) -> Dict[str, Any]:
         """Summary dashboard metrics for executive overview."""
         return {
             "total_test_runs": 128,

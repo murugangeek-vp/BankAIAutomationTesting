@@ -23,12 +23,15 @@ class ExecutorAgent(BaseAgent):
 
     def __init__(self, agent_id: str = "executor-01", tool_registry: Optional[MCPToolRegistry] = None):
         super().__init__(
+            role=AgentRole.EXECUTOR,
             agent_id=agent_id,
             name="Test Driver Executor",
-            role=AgentRole.EXECUTOR,
             tool_registry=tool_registry,
             token_budget=20000
         )
+
+    def get_system_prompt(self) -> str:
+        return "You are the Executor Agent. Your role is to drive multi-surface test steps across Web, Mobile, API, and DB using MCP tools."
 
     def process(self, input_data: Dict[str, Any], context: Dict[str, Any]) -> AgentResponse:
         """

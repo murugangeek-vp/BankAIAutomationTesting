@@ -50,6 +50,9 @@ class BehaviorPattern:
     screen_reader_enabled: bool = False
     preferred_language: str = "en"
     timezone: str = "UTC"
+    typing_speed_wpm: int = 60
+    average_think_time_sec: float = 2.0
+    patience_score: int = 3
 
 
 @dataclass
@@ -70,6 +73,22 @@ class PersonaProfile:
     risk_indicators: list[str] = field(default_factory=list)
     compliance_checks: list[str] = field(default_factory=list)
     metadata: dict[str, Any] = field(default_factory=dict)
+
+    @property
+    def persona_id(self) -> str:
+        return self.type.value
+
+    @property
+    def persona_name(self) -> str:
+        return self.name
+
+    @property
+    def persona_type(self) -> PersonaType:
+        return self.type
+
+    @property
+    def behavioral(self) -> BehaviorPattern:
+        return self.behavior
 
 
 # ---------------------------------------------------------------------------
@@ -306,9 +325,18 @@ PERSONAS: dict[PersonaType, PersonaProfile] = {
 
 def get_persona(persona_type: PersonaType) -> PersonaProfile:
     """Get a pre-built persona profile by type."""
-    return PERSONAS[persona_type]
+    return PERSONAS.get(persona_type, PERSONAS[PersonaType.RETAIL_USER])
 
 
 def list_personas() -> list[PersonaType]:
     """List all available persona types."""
     return list(PERSONAS.keys())
+
+
+class PersonaCatalog:
+    """Catalog wrapper class for persona lookups."""
+    def get_persona(self, persona_type: PersonaType) -> PersonaProfile:
+        return get_persona(persona_type)
+
+    def list_personas(self) -> list[PersonaType]:
+        return list_personas()

@@ -28,9 +28,9 @@ class SyntheticDataAgent(BaseAgent):
 
     def __init__(self, agent_id: str = "synthdata-01", tool_registry: Optional[MCPToolRegistry] = None):
         super().__init__(
+            role=AgentRole.SYNTHETIC_DATA,
             agent_id=agent_id,
             name="Synthetic Financial Data Generator",
-            role=AgentRole.SYNTHETIC_DATA,
             tool_registry=tool_registry,
             token_budget=10000
         )
@@ -38,6 +38,9 @@ class SyntheticDataAgent(BaseAgent):
         self.pan_gen = PANGenerator()
         self.routing_gen = RoutingNumberGenerator()
         self.tx_gen = TransactionGenerator()
+
+    def get_system_prompt(self) -> str:
+        return "You are the Synthetic Data Agent. Your role is to generate non-reversible, checksum-valid financial identifiers and narrative transaction data."
 
     def process(self, input_data: Dict[str, Any], context: Dict[str, Any]) -> AgentResponse:
         """

@@ -32,6 +32,20 @@ from src.orchestrator.state import (
 )
 
 
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional
+
+
+@dataclass
+class AgentResponse:
+    """Standardized response container for agent operations."""
+    success: bool
+    content: str
+    data: Dict[str, Any] = field(default_factory=dict)
+    tokens_used: int = 0
+    error_message: Optional[str] = None
+
+
 class BaseAgent(abc.ABC):
     """
     Abstract base for all agents in the Banking AI Testing Framework.
@@ -47,15 +61,40 @@ class BaseAgent(abc.ABC):
     def __init__(
         self,
         role: AgentRole,
+        agent_id: Optional[str] = None,
+        name: Optional[str] = None,
+        tool_registry: Optional[Any] = None,
+        token_budget: int = 10000,
         model_tier: ModelTier = ModelTier.ECONOMY,
         config: Optional[FrameworkConfig] = None,
     ) -> None:
         self.role = role
+        self.agent_id = agent_id or f"{role.value}-01"
+        self.name = name or f"Agent-{role.value}"
+        self.tool_registry = tool_registry
+        self.token_budget = token_budget
         self.model_tier = model_tier
         self.config = config or get_config()
         self.logger = get_logger(
             name=f"agent.{role.value}",
             agent_role=role.value,
+        )
+
+    def create_response(
+        self,
+        success: bool,
+        content: str,
+        data: Optional[Dict[str, Any]] = None,
+        tokens_used: int = 0,
+        error_message: Optional[str] = None,
+    ) -> AgentResponse:
+        """Helper method to construct an AgentResponse."""
+        return AgentResponse(
+            success=success,
+            content=content,
+            data=data or {},
+            tokens_used=tokens_used,
+            error_message=error_message
         )
 
         # Initialize LLM based on model tier

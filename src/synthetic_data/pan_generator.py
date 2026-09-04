@@ -32,6 +32,10 @@ class CardNetwork(str, Enum):
     TEST = "test"
 
 
+# Alias for compatibility
+CardBrand = CardNetwork
+
+
 # Test-only BIN prefixes — these do NOT correspond to real issuers
 TEST_BINS: dict[CardNetwork, list[str]] = {
     CardNetwork.VISA: ["400000", "400001", "400002", "400099"],
@@ -60,9 +64,19 @@ class GeneratedPAN:
     masked: str  # e.g., "4000 00** **** 1234"
     is_test_range: bool = True
     luhn_valid: bool = True
+    cvv: str = "123"
+    expiration_date: str = "12/28"
 
     def __str__(self) -> str:
         return self.masked
+
+    @property
+    def masked_pan(self) -> str:
+        return self.masked
+
+    @property
+    def brand(self) -> CardNetwork:
+        return self.network
 
 
 def _luhn_checksum(number: str) -> int:
@@ -147,6 +161,19 @@ class PANGenerator:
 
         logger.debug("pan_generated", network=network.value, masked=result.masked)
         return result
+
+    def generate_pan(self, brand: Optional[CardNetwork] = None, network: Optional[CardNetwork] = None) -> GeneratedPAN:
+        """Alias for generate() for backward compatibility."""
+        target_network = brand or network or CardNetwork.TEST
+        return self.generate(network=target_network)
+
+    @staticmethod
+    def validate_luhn(pan: str) -> bool:
+        """Validate Luhn checksum for a card number."""
+        clean_pan = "".join(c for c in pan if c.isdigit())
+        if len(clean_pan) < 13 or len(clean_pan) > 19:
+            return False
+        return _luhn_checksum(clean_pan) == 0
 
     def generate_batch(
         self,
